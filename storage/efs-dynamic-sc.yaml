@@ -4,7 +4,6 @@ metadata:
   name: efs-dynamic
 reclaimPolicy: Retain
 provisioner: efs.csi.aws.com
-volumeBindingMode: WaitForFirstConsumer
 parameters:
   provisioningMode: efs-ap
   fileSystemId: fs-06221977062fe96d3
