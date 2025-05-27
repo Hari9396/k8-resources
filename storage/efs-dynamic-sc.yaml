@@ -2,9 +2,11 @@ kind: StorageClass
 apiVersion: storage.k8s.io/v1
 metadata:
   name: efs-dynamic
+reclaimPolicy: Retain
 provisioner: efs.csi.aws.com
+volumeBindingMode: WaitForFirstConsumer
 parameters:
   provisioningMode: efs-ap
-  fileSystemId: fs-0ab1192d275e1ea97
+  fileSystemId: fs-06221977062fe96d3
   directoryPerms: "700"
   basePath: "/expense"
