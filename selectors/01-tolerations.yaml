@@ -17,3 +17,5 @@ spec:
   - key: "project"
     operator: "Exists"
     effect: "NoSchedule"
+  nodeSelector:
+    project: expense
