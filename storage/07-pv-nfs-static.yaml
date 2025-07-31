@@ -1,0 +1,51 @@
+# pv-nfs-static.yaml
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: nfs-static-pv
+spec:
+  capacity:
+    storage: 100Gi
+  accessModes:
+    - ReadWriteMany
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: azure-nfs-static
+  csi:
+    driver: file.csi.azure.com
+    volumeHandle: "/subscriptions/dd79405b-91dd-4693-8c3d-5fe93d64ce50/resourceGroups/aks-rg/providers/Microsoft.Storage/storageAccounts/staticnfs7934/fileServices/default/shares/nfs-share"  # See below how to get this
+    volumeAttributes:
+      protocol: nfs
+      shareName: nfs-share
+      storageAccount: staticnfs7934
+---
+# pvc-nfs-static.yaml
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: nfs-static-pvc
+spec:
+  accessModes:
+    - ReadWriteMany
+  storageClassName: azure-nfs-static
+  resources:
+    requests:
+      storage: 100Gi
+---
+# pod-nfs-static.yaml
+apiVersion: v1
+kind: Pod
+metadata:
+  name: nginx-nfs-static
+spec:
+  containers:
+  - name: nginx
+    image: nginx
+    volumeMounts:
+    - name: nfs-storage
+      mountPath: /usr/share/nginx/html
+  volumes:
+  - name: nfs-storage
+    persistentVolumeClaim:
+      claimName: nfs-static-pvc
+
+
