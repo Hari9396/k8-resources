@@ -1,0 +1,55 @@
+# storageclass-azure.yaml
+apiVersion: storage.k8s.io/v1
+kind: StorageClass
+metadata:
+  name: azure-disk-sc
+provisioner: disk.csi.azure.com
+parameters:
+  skuName: Standard_LRS  # Or Premium_LRS
+  storageaccounttype: Standard_LRS
+reclaimPolicy: Delete
+volumeBindingMode: WaitForFirstConsumer
+---
+# pvc-azure.yaml
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: azure-disk-dynamic
+spec:
+  accessModes:
+    - ReadWriteOnce
+  storageClassName: azure-disk-sc
+  resources:
+    requests:
+      storage: 5Gi
+---
+# pod-azure.yaml
+apiVersion: v1
+kind: Pod
+metadata:
+  name: nginx-dynamic
+  labels:
+    app: nginx-dynamic
+spec:
+  containers:
+  - name: nginx
+    image: nginx
+    volumeMounts:
+    - mountPath: /usr/share/nginx/html
+      name: disk-storage
+  volumes:
+  - name: disk-storage
+    persistentVolumeClaim:
+      claimName: azure-disk-dynamic
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: nginx-dynamic-svc
+spec:
+  type: LoadBalancer
+  selector:
+    app: nginx-dynamic
+  ports:
+  - port: 80
+    targetPort: 80
