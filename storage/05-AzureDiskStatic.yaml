@@ -1,0 +1,47 @@
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: azure-disk-static
+spec:
+  capacity:
+    storage: 5Gi
+  accessModes:
+    - ReadWriteOnce
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: ""
+  csi:
+    driver: disk.csi.azure.com
+    volumeHandle: /subscriptions/dd79405b-91dd-4693-8c3d-5fe93d64ce50/resourceGroups/aks-rg/providers/Microsoft.Compute/disks/mydisk
+    fsType: ext4
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: azure-disk-static
+spec:
+  storageClassName: ""
+  volumeName: azure-disk-static
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 5Gi
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: nginx-static
+  labels:
+    purpose: disk-static
+    project: expense
+spec:
+  containers:
+  - name: nginx
+    image: nginx
+    volumeMounts:
+    - name: persistent-storage
+      mountPath: /usr/share/nginx/html
+  volumes:
+  - name: persistent-storage
+    persistentVolumeClaim:
+      claimName: azure-disk-static
