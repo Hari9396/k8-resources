@@ -38,7 +38,7 @@ metadata:
   name: nginx-nfs-static
 spec:
   containers:
-  - name: nginx
+  - name: nginxnfs
     image: nginx
     volumeMounts:
     - name: nfs-storage
